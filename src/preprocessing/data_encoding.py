@@ -9,7 +9,7 @@ def build_preprocessor(categorical_cols, numerical_cols):
         transformers.append(
             (
                 "cat",
-                OneHotEncoder(drop="first", handle_unknown="ignore", sparse=False),
+                OneHotEncoder(drop="first", handle_unknown="ignore", sparse_output=False),
                 categorical_cols,
             )
         )
