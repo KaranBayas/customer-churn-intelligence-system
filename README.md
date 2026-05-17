@@ -50,6 +50,11 @@ The dashboard provides a beginner-friendly interface for churn analysis and pred
 | ![Home page preview](dashboard/assets/home-page.png) | ![Prediction page preview](dashboard/assets/prediction-page.png) | ![Model insights preview](dashboard/assets/model-insights-page.png) |
 | Overview metrics and churn summary for the dataset. | Single-record churn prediction form with probability output. | Logistic regression coefficient analysis and model explainability. |
 
+| AWS deployment | Feature importance |
+|---|---|
+| ![AWS deployment screenshot](dashboard/assets/aws-deployment.png) | ![Feature importance screenshot](dashboard/assets/feature-imp.png) |
+| Deployed Streamlit app on AWS EC2. | Churn feature importance insights from the model. |
+
 Run it locally from the repository root:
 ```bash
 streamlit run dashboard/app.py
@@ -57,7 +62,16 @@ streamlit run dashboard/app.py
 
 Then open the URL shown in the terminal (typically `http://localhost:8501`).
 
+Or view the deployed AWS EC2 dashboard at:
+
+`http://13.60.230.166:8501`
+
 > The dashboard uses a locked light theme via `.streamlit/config.toml` at the project root, ensuring consistent light UI styling regardless of the operating system theme.
+
+## Architecture
+
+This project deploys as a Docker container on AWS EC2. The Streamlit dashboard is served on port `8501`, with the trained pipeline and raw dataset available inside the container.
+
 
 ### Dashboard screenshots
 
@@ -66,6 +80,9 @@ Store dashboard screenshots in `dashboard/assets/` and reference them using GitH
 - `dashboard/assets/home-page.png`
 - `dashboard/assets/prediction-page.png`
 - `dashboard/assets/model-insights-page.png`
+- `dashboard/assets/aws-deployment.png`
+- `dashboard/assets/feature-imp.png`
+
 
 ## Recommended workflow
 
