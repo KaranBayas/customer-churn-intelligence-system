@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 
 
@@ -57,5 +58,71 @@ def plot_monthly_charges(df):
     ax.set_title("Monthly Charges Distribution")
     ax.set_xlabel("Monthly Charges")
     ax.set_ylabel("Number of customers")
+    fig.tight_layout()
+    return fig
+
+
+def plot_logistic_coefficients(importance_df, top_n=10):
+    """Plot the most important logistic regression coefficients for churn prediction."""
+    if importance_df is None or importance_df.empty:
+        raise ValueError("importance_df must be a non-empty DataFrame.")
+    if not {"feature", "coefficient"}.issubset(importance_df.columns):
+        raise ValueError("importance_df must contain 'feature' and 'coefficient' columns.")
+
+    plot_data = (
+        importance_df.copy()
+        .assign(abs_coef=lambda df: df["coefficient"].abs())
+        .sort_values("abs_coef", ascending=False)
+        .head(top_n)
+    )
+
+    colors = plot_data["coefficient"].apply(lambda x: "#d73027" if x > 0 else "#1a9850")
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.barh(plot_data["feature"], plot_data["coefficient"], color=colors)
+    ax.axvline(0, color="#333333", linewidth=0.8, linestyle="--")
+    ax.set_title("Logistic Regression Feature Effects on Churn Risk")
+    ax.set_xlabel("Coefficient value")
+    ax.set_ylabel("Feature")
+    ax.invert_yaxis()
+
+    for idx, coef in enumerate(plot_data["coefficient"]):
+        offset = 0.01 if coef >= 0 else -0.01
+        ha = "left" if coef >= 0 else "right"
+        ax.text(coef + offset, idx, f"{coef:.3f}", va="center", ha=ha, color="#111111", fontsize=9)
+
+    fig.tight_layout()
+    return fig
+
+
+def plot_logistic_coefficients(importance_df, top_n=10):
+    """Plot the most important logistic regression coefficients for churn prediction."""
+    if importance_df is None or importance_df.empty:
+        raise ValueError("importance_df must be a non-empty DataFrame.")
+    if not {"feature", "coefficient"}.issubset(importance_df.columns):
+        raise ValueError("importance_df must contain 'feature' and 'coefficient' columns.")
+
+    plot_data = (
+        importance_df.copy()
+        .assign(abs_coef=lambda df: df["coefficient"].abs())
+        .sort_values("abs_coef", ascending=False)
+        .head(top_n)
+    )
+
+    colors = plot_data["coefficient"].apply(lambda x: "#d73027" if x > 0 else "#1a9850")
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.barh(plot_data["feature"], plot_data["coefficient"], color=colors)
+    ax.axvline(0, color="#333333", linewidth=0.8, linestyle="--")
+    ax.set_title("Logistic Regression Feature Effects on Churn Risk")
+    ax.set_xlabel("Coefficient value")
+    ax.set_ylabel("Feature")
+    ax.invert_yaxis()
+
+    for idx, coef in enumerate(plot_data["coefficient"]):
+        offset = 0.01 if coef >= 0 else -0.01
+        ha = "left" if coef >= 0 else "right"
+        ax.text(coef + offset, idx, f"{coef:.3f}", va="center", ha=ha, color="#111111", fontsize=9)
+
     fig.tight_layout()
     return fig
