@@ -48,6 +48,38 @@ Because we use `base = "light"`, Streamlit will ignore the operating system dark
 - When displaying charts, use light plot backgrounds and dark grid/text colors.
 - Prefer `st.markdown` and `st.metric` defaults for accessibility and clean appearance.
 
+## Dashboard Preview
+
+Use the `dashboard/assets/` folder to store screenshot images for the dashboard. Add images to the folder and reference them in this README with GitHub-style markdown links.
+
+### Home page
+
+![Home page preview](dashboard/assets/home-page.png)
+
+A concise overview with dataset summary metrics, churn rate, and navigation to the prediction and insights sections.
+
+### Prediction page
+
+![Prediction page preview](dashboard/assets/prediction-page.png)
+
+A clean single-customer prediction form with probability output and risk labels for churn decision support.
+
+### Model insights page
+
+![Model insights page preview](dashboard/assets/model-insights-page.png)
+
+A professional view of feature effects and coefficient-based model explainability for logistic regression.
+
+## Screenshot instructions
+
+1. Capture dashboard screenshots locally using Streamlit.
+2. Save images in `dashboard/assets/`.
+3. Update the markdown image paths if you rename the files.
+4. Keep screenshot filenames descriptive and lowercase, for example:
+   - `home-page.png`
+   - `prediction-page.png`
+   - `model-insights-page.png`
+
 ## Notes
 
 - The dashboard loads the saved model pipeline from `model/customer_churn_pipeline.pkl`.
