@@ -1,0 +1,9 @@
+[theme]
+base = "light"
+primaryColor = "#0B4F6C"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F4F7FB"
+textColor = "#0F1A24"
+font = "sans serif"
+
+# Lock theme to light so Streamlit will not follow the operating system dark mode.
