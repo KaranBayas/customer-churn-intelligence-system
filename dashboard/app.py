@@ -22,6 +22,7 @@ from dashboard.visuals import (
     plot_contract_churn,
     plot_internet_service_churn,
     plot_monthly_charges,
+    plot_logistic_coefficients,
 )
 
 
@@ -177,12 +178,12 @@ def show_model_insights(pipeline):
     st.subheader("Top features")
     st.write(importance_df.head(10).reset_index(drop=True))
 
-    fig, ax = plt.subplots(figsize=(8, 5))
-    ax.barh(importance_df.head(10)["feature"], importance_df.head(10)["coefficient"], color="#4c78a8")
-    ax.set_title("Top Logistic Regression Coefficients")
-    ax.set_xlabel("Coefficient value")
-    ax.invert_yaxis()
+    fig = plot_logistic_coefficients(importance_df.head(10))
     st.pyplot(fig)
+
+    st.markdown(
+        "Positive coefficients increase predicted churn risk, while negative coefficients reduce churn probability."
+    )
 
 
 def show_sample_profiles():
