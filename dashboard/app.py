@@ -29,7 +29,8 @@ def style_page():
     st.markdown(
         """
         <style>
-        .stApp { background-color: #f8f9fa; }
+        .stApp { background-color: #ffffff; color: #111111; }
+        .stApp .block-container { background-color: #f8f9fa; }
         .big-font { font-size: 1.5rem; font-weight: 600; }
         .small-text { color: #5a5a5a; }
         .metric-label { font-size: 0.95rem; color: #5a5a5a; }

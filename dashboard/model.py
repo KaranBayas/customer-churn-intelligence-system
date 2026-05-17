@@ -57,7 +57,12 @@ def get_feature_importance(pipeline) -> pd.DataFrame | None:
     if classifier is None or not hasattr(classifier, "coef_"):
         return None
 
-    coefficients = classifier.coef_[0]
+    # LogisticRegression stores coefficients as a NumPy array.
+    # For binary churn classification, coef_ is typically shape (1, n_features).
+    coefficients = classifier.coef_
+    if coefficients.ndim > 1:
+        coefficients = coefficients[0]
+
     feature_names = None
     if preprocessor is not None and hasattr(preprocessor, "get_feature_names_out"):
         feature_names = preprocessor.get_feature_names_out()
@@ -65,12 +70,11 @@ def get_feature_importance(pipeline) -> pd.DataFrame | None:
     if feature_names is None:
         feature_names = [f"feature_{i}" for i in range(len(coefficients))]
 
-    importance_df = pd.DataFrame(
-        {
-            "feature": feature_names,
-            "coefficient": coefficients,
-            "importance": coefficients.abs(),
-        }
-    )
+    # Convert coefficients to a pandas Series to use .abs() and preserve feature labels.
+    coefficient_series = pd.Series(coefficients, index=feature_names, name="coefficient")
+    importance_series = coefficient_series.abs().rename("importance")
+
+    importance_df = pd.concat([coefficient_series, importance_series], axis=1).reset_index()
+    importance_df.columns = ["feature", "coefficient", "importance"]
     importance_df = importance_df.sort_values(by="importance", ascending=False)
     return importance_df
