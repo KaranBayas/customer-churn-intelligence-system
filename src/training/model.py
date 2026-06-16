@@ -3,7 +3,7 @@ from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 
 
-def build_classifier(model_name="logistic", **kwargs):
+def build_classifier(model_name="xgboost", **kwargs):
     """Build a classifier for supervised churn prediction."""
     if model_name == "logistic":
         return LogisticRegression(max_iter=1000, random_state=42, **kwargs)

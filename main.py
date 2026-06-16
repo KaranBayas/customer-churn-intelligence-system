@@ -48,9 +48,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--model",
         type=str,
-        default="logistic",
+        default="xgboost",
         choices=["logistic", "random_forest", "xgboost"],
-        help="Classifier type to train.",
+        help="Classifier type to train. Defaults to XGBoost.",
     )
     parser.add_argument(
         "--test-size",
