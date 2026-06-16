@@ -29,7 +29,7 @@ A clean and modular churn prediction project built for a portfolio-ready machine
 - saves the trained pipeline to `model/customer_churn_pipeline.pkl`
 - writes a training report to `model/training_report.txt`
 
-Run the training script with default settings:
+Run the training script with default settings (XGBoost):
 ```bash
 python main.py
 ```
@@ -48,12 +48,14 @@ The dashboard provides a beginner-friendly interface for churn analysis and pred
 | Home | Prediction | Model Insights |
 |---|---|---|
 | ![Home page preview](dashboard/assets/home-page.png) | ![Prediction page preview](dashboard/assets/prediction-page.png) | ![Model insights preview](dashboard/assets/model-insights-page.png) |
-| Overview metrics and churn summary for the dataset. | Single-record churn prediction form with probability output. | Logistic regression coefficient analysis and model explainability. |
+| Overview metrics and churn summary for the dataset. | Single-record churn prediction form with probability output. | Feature importance and explainability for XGBoost, random forest, and logistic regression. |
+
+The Model Insights page now supports XGBoost feature importance, SHAP explainability, and logistic regression coefficient analysis.
 
 | AWS deployment | Feature importance |
 |---|---|
 | ![AWS deployment screenshot](dashboard/assets/aws-deployment.png) | ![Feature importance screenshot](dashboard/assets/feature-imp.png) |
-| Deployed Streamlit app on AWS EC2. | Churn feature importance insights from the model. |
+| Deployed Streamlit app on AWS EC2. | Churn feature importance insights from the model, including XGBoost feature importance and SHAP explainability. |
 
 Run it locally from the repository root:
 ```bash
