@@ -3,6 +3,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import shap
 import streamlit as st
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
@@ -166,24 +167,58 @@ def show_exploration(df: pd.DataFrame):
         st.pyplot(plot_monthly_charges(df))
 
 
-def show_model_insights(pipeline):
+def show_model_insights(pipeline, df: pd.DataFrame):
     st.title("Model Insights")
-    st.markdown("This section shows how the logistic regression model uses input features to predict churn.")
+    st.markdown(
+        "This section shows feature importance and explainability for the trained churn model."
+    )
 
     importance_df = get_feature_importance(pipeline)
     if importance_df is None or importance_df.empty:
-        st.warning("Feature importance is not available for this model.")
+        st.warning(
+            "Feature importance is not available for this model. The model must expose either feature_importances_ or coef_."
+        )
         return
 
-    st.subheader("Top features")
-    st.write(importance_df.head(10).reset_index(drop=True))
+    st.subheader("Top 20 most important features")
+    top_features = importance_df.head(20).copy().reset_index(drop=True)
+    st.dataframe(top_features)
+    st.bar_chart(top_features.set_index("feature")["importance"])
 
-    fig = plot_logistic_coefficients(importance_df.head(10))
-    st.pyplot(fig)
+    classifier = pipeline.named_steps.get("classifier")
+    preprocessor = pipeline.named_steps.get("preprocessor")
 
-    st.markdown(
-        "Positive coefficients increase predicted churn risk, while negative coefficients reduce churn probability."
-    )
+    if hasattr(classifier, "coef_"):
+        st.subheader("Logistic regression coefficient sign")
+        st.pyplot(plot_logistic_coefficients(top_features.head(10)))
+        st.markdown(
+            "Positive coefficients increase predicted churn risk, while negative coefficients reduce churn probability."
+        )
+
+    if hasattr(classifier, "feature_importances_"):
+        st.subheader("SHAP explainability")
+        try:
+            raw_features = df.drop(columns=["Churn"], errors="ignore")
+            if preprocessor is not None:
+                transformed_features = preprocessor.transform(raw_features)
+            else:
+                transformed_features = raw_features
+
+            explainer = shap.TreeExplainer(classifier)
+            shap_values = explainer(transformed_features)
+            fig = plt.figure(figsize=(10, 7))
+            shap.summary_plot(
+                shap_values,
+                feature_names=importance_df["feature"].tolist(),
+                show=False,
+            )
+            st.pyplot(fig)
+            plt.close(fig)
+        except Exception as exc:
+            st.warning(
+                "SHAP explainability could not be generated for this model. Please check that the model and dashboard data are compatible."
+            )
+            st.write(f"Details: {exc}")
 
 
 def show_sample_profiles():
@@ -206,7 +241,7 @@ def main():
     elif page == "Exploration":
         show_exploration(df)
     elif page == "Model Insights":
-        show_model_insights(pipeline)
+        show_model_insights(pipeline, df)
     elif page == "Sample Profiles":
         show_sample_profiles()
 

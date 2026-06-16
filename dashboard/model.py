@@ -47,34 +47,51 @@ def risk_label(probability: float | None) -> str:
 
 
 def get_feature_importance(pipeline) -> pd.DataFrame | None:
-    """Extract feature importance from a logistic regression classifier if available."""
+    """Extract feature importance from a fitted pipeline classifier."""
     if not hasattr(pipeline, "named_steps"):
         return None
 
     classifier = pipeline.named_steps.get("classifier")
     preprocessor = pipeline.named_steps.get("preprocessor")
-
-    if classifier is None or not hasattr(classifier, "coef_"):
+    if classifier is None:
         return None
 
-    # LogisticRegression stores coefficients as a NumPy array.
-    # For binary churn classification, coef_ is typically shape (1, n_features).
-    coefficients = classifier.coef_
-    if coefficients.ndim > 1:
-        coefficients = coefficients[0]
+    importance = None
+    coefficient_values = None
+
+    if hasattr(classifier, "feature_importances_"):
+        importance = classifier.feature_importances_
+    elif hasattr(classifier, "coef_"):
+        coefficient_values = classifier.coef_
+        if coefficient_values.ndim > 1:
+            coefficient_values = coefficient_values[0]
+        importance = abs(coefficient_values)
+
+    if importance is None:
+        return None
 
     feature_names = None
     if preprocessor is not None and hasattr(preprocessor, "get_feature_names_out"):
-        feature_names = preprocessor.get_feature_names_out()
+        try:
+            feature_names = preprocessor.get_feature_names_out()
+        except Exception:
+            feature_names = None
 
     if feature_names is None:
-        feature_names = [f"feature_{i}" for i in range(len(coefficients))]
+        feature_names = [f"feature_{i}" for i in range(len(importance))]
 
-    # Convert coefficients to a pandas Series to use .abs() and preserve feature labels.
-    coefficient_series = pd.Series(coefficients, index=feature_names, name="coefficient")
-    importance_series = coefficient_series.abs().rename("importance")
+    if len(feature_names) != len(importance):
+        feature_names = [f"feature_{i}" for i in range(len(importance))]
 
-    importance_df = pd.concat([coefficient_series, importance_series], axis=1).reset_index()
-    importance_df.columns = ["feature", "coefficient", "importance"]
-    importance_df = importance_df.sort_values(by="importance", ascending=False)
+    importance_df = pd.DataFrame(
+        {
+            "feature": feature_names,
+            "importance": importance,
+        }
+    )
+
+    if coefficient_values is not None:
+        importance_df["coefficient"] = coefficient_values
+
+    importance_df = importance_df.sort_values(by="importance", ascending=False).reset_index(drop=True)
     return importance_df
